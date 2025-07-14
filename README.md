@@ -802,6 +802,105 @@ pip install celery redis
 * Use **Render, Railway, or AWS ECS/Fargate**
 * Secure with `.env`, **rate limits**, **logging**
 
+Here's how to **build a Resume Analyzer AI Agent** step by step:
+
+---
+
+## 🧑‍💼 **Project 5: Resume Analyzer Agent**
+
+### 🎯 Goal:
+
+* Upload resume (PDF or text)
+* Extract and analyze content
+* Suggest improvements
+* Match with real job descriptions
+
+---
+
+### ✅ **Tech Stack**
+
+* `LangChain`, `OpenAI`, `FAISS`, `PyPDF`, `FastAPI`, `Chroma` (optional)
+* Frontend (optional): React, Streamlit, or plain HTML upload
+
+---
+
+### 🧱 **Project Structure**
+
+```
+resume-analyzer/
+├── app/
+│   ├── main.py            # FastAPI app
+│   ├── analyzer.py        # LangChain logic
+│   ├── resume_loader.py   # Parse PDF
+│   ├── job_data/          # Sample job descriptions
+│   └── templates/         # Frontend (optional)
+├── requirements.txt
+└── Dockerfile
+```
+
+---
+
+### 🔍 **Key Features**
+
+#### 1. **Upload Resume & Parse**
+
+```python
+from langchain.document_loaders import PyPDFLoader
+loader = PyPDFLoader("uploads/resume.pdf")
+resume_docs = loader.load()
+```
+
+#### 2. **Prompt Template for Suggestions**
+
+```python
+from langchain.prompts import PromptTemplate
+
+template = PromptTemplate.from_template(
+    "You are a resume expert. Review this resume:\n{resume}\n\nGive top 5 improvement suggestions."
+)
+```
+
+#### 3. **Job Matching via Embeddings**
+
+```python
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+
+# Assume job_descriptions is a list of LangChain documents
+embedding = OpenAIEmbeddings()
+store = FAISS.from_documents(job_descriptions, embedding)
+
+# Query: match this resume
+docs = store.similarity_search("Senior Python Developer, APIs, FastAPI")
+```
+
+#### 4. **FastAPI Endpoint**
+
+```python
+@app.post("/analyze")
+def analyze_resume(file: UploadFile = File(...)):
+    # Parse, analyze, return suggestions and job matches
+```
+
+---
+
+### 🧪 Output Sample
+
+```json
+{
+  "improvements": [
+    "Add more measurable impact (e.g., 'improved performance by 20%')",
+    "Include recent technologies like LangChain, RAG",
+    ...
+  ],
+  "best_matches": [
+    {"title": "Python Backend Engineer", "match_score": 0.89},
+    {"title": "LLM Developer", "match_score": 0.83}
+  ]
+}
+```
+
+
 
 
 
